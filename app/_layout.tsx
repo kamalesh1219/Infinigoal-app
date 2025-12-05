@@ -1,73 +1,34 @@
 import "../global.css";
-import { Stack, router } from "expo-router";
+import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import CustomSplash from "../components/CustomSplash";
-import { useEffect, useState } from "react";
-import { supabase } from "@/src/lib/supabase"; 
 import { ThemeProvider, DefaultTheme } from "@react-navigation/native";
+import { useEffect } from "react";
 
-// Don't auto-hide splash
+// Prevent auto-hide
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts({
+  const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  const [showSplash, setShowSplash] = useState(true);
-  const [checkedAuth, setCheckedAuth] = useState(false);
-
-  // Handle font errors
   useEffect(() => {
-    if (fontError) throw fontError;
-  }, [fontError]);
+    if (error) throw error;
+  }, [error]);
 
-  // Hide system splash when fonts load
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
-  // → Show CustomSplash only 2 seconds, then hide
-  useEffect(() => {
-    if (!fontsLoaded) return;
-
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [fontsLoaded]);
-
-  // 🔥 Check supabase auth AFTER splash ends
-  useEffect(() => {
-    const checkLogin = async () => {
-      if (showSplash) return; // wait until splash is gone
-
-      const { data } = await supabase.auth.getSession();
-
-      if (data.session) {
-        router.replace("/(tabs)");
-      } else {
-        router.replace("/(auth)/sign-in");
-      }
-
-      setCheckedAuth(true);
-    };
-
-    checkLogin();
-  }, [showSplash]);
-
-  // ❗ Wait for fonts + splash + auth check to finish
-  if (!fontsLoaded || showSplash || !checkedAuth) {
-   return <CustomSplash />;
-  }
-
+  if (!loaded) return null;
 
   return (
     <ThemeProvider value={DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
+        <Stack.Screen name="loading" />        {/* Splash + auth check */}
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
       </Stack>

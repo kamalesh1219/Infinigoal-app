@@ -1,12 +1,48 @@
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, router } from 'expo-router';
+import { supabase } from '@/src/lib/supabase';
 
 const SignInScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // 🚀 Auto redirect if user already logged in
+  useEffect(() => {
+    checkExistingSession();
+  }, []);
+
+  async function checkExistingSession() {
+    const { data } = await supabase.auth.getSession();
+
+    if (data.session) {
+      // User already logged in → go home automatically
+      router.replace("/(tabs)/home");
+    }
+  }
+
+  // ⭐ Login function
+  async function SignInwithEmail() {
+    if (!email || !password) {
+      Alert.alert("Error", "Please enter email and password");
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password.trim(),
+    });
+
+    if (error) {
+      Alert.alert("Login Failed", error.message);
+      return;
+    }
+
+    // Login success → goto HOME
+    router.replace("/(tabs)/home");
+  }
 
   return (
     <View style={styles.container}>
@@ -16,8 +52,9 @@ const SignInScreen = () => {
       <TextInput
         value={email}
         onChangeText={setEmail}
-        placeholder="jon@gmail.com"
+        placeholder="infinigoal@gmail.com"
         style={styles.input}
+        autoCapitalize="none"
       />
 
       <Text style={styles.label}>Password</Text>
@@ -29,7 +66,8 @@ const SignInScreen = () => {
         secureTextEntry
       />
 
-      <Button text="Sign in" />
+      <Button onPress={SignInwithEmail} text="Sign in" />
+
       <Link href="/sign-up" style={styles.textButton}>
         Create an account
       </Link>

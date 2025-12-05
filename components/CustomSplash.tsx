@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import { View, Text, Image, StyleSheet, Animated } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
 
-export default function CustomSplash() {
+SplashScreen.preventAutoHideAsync();
+
+export default function CustomSplash({ onFinish }: { onFinish: () => void }) {
   const fadeAnim = new Animated.Value(0);
 
   useEffect(() => {
@@ -9,7 +12,12 @@ export default function CustomSplash() {
       toValue: 1,
       duration: 1200,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+      setTimeout(async () => {
+        await SplashScreen.hideAsync();
+        onFinish();
+      }, 1000);
+    });
   }, []);
 
   return (
@@ -19,7 +27,7 @@ export default function CustomSplash() {
         style={[styles.logo, { opacity: fadeAnim }]}
       />
 
-      <Animated.Text style={[styles.title, { opacity: fadeAnim }]}>
+      <Animated.Text style={[styles.title,{color: "#FF7B00"}, { opacity: fadeAnim }]}>
         🛒  InfiniGoal Ecommerce
       </Animated.Text>
 
@@ -40,7 +48,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 200,
     height: 200,
-    resizeMode: "contain",
+    resizeMode: "contain",  
   },
   title: {
     fontSize: 22,
