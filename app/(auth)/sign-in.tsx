@@ -1,104 +1,109 @@
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import Button from '../../components/Button';
-import Colors from '../../constants/Colors';
-import { Link, Stack, router } from 'expo-router';
-import { supabase } from '@/src/lib/supabase';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { router } from "expo-router";
+import { supabase } from "@/src/lib/supabase";
 
-const SignInScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function SignInScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // 🚀 Auto redirect if user already logged in
+  // Auto redirect if already logged in
   useEffect(() => {
-    checkExistingSession();
+    checkSession();
   }, []);
 
-  async function checkExistingSession() {
+  async function checkSession() {
     const { data } = await supabase.auth.getSession();
-
     if (data.session) {
-      // User already logged in → go home automatically
       router.replace("/(tabs)/home");
     }
   }
 
-  // ⭐ Login function
   async function SignInwithEmail() {
     if (!email || !password) {
-      Alert.alert("Error", "Please enter email and password");
+      Alert.alert("Error", "Enter both email and password");
       return;
     }
+
+    setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password: password.trim(),
     });
 
+    setLoading(false);
+
     if (error) {
       Alert.alert("Login Failed", error.message);
       return;
     }
 
-    // Login success → goto HOME
     router.replace("/(tabs)/home");
   }
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Sign in' }} />
+    <KeyboardAvoidingView
+      className="flex-1 bg-white justify-center px-6"
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <Text className="text-3xl font-bold text-center text-black mb-2">
+        Welcome Back 👋
+      </Text>
 
-      <Text style={styles.label}>Email</Text>
+      <Text className="text-center text-gray-600 mb-10">
+        Login to continue shopping with InfiniGoal
+      </Text>
+
+      {/* Email */}
+      <Text className="text-gray-700 mb-1">Email</Text>
       <TextInput
         value={email}
         onChangeText={setEmail}
-        placeholder="infinigoal@gmail.com"
-        style={styles.input}
+        className="border border-gray-300 rounded-xl p-3 mb-4 bg-white"
+        placeholder="example@gmail.com"
         autoCapitalize="none"
       />
 
-      <Text style={styles.label}>Password</Text>
+      {/* Password */}
+      <Text className="text-gray-700 mb-1">Password</Text>
       <TextInput
         value={password}
         onChangeText={setPassword}
-        placeholder=""
-        style={styles.input}
+        className="border border-gray-300 rounded-xl p-3 mb-4 bg-white"
+        placeholder="Enter password"
         secureTextEntry
       />
 
-      <Button onPress={SignInwithEmail} text="Sign in" />
+      {/* Login Button */}
+      <TouchableOpacity
+        onPress={SignInwithEmail}
+        disabled={loading}
+        className="bg-orange-500 rounded-full py-4 mt-2"
+      >
+        <Text className="text-center text-white font-bold text-lg">
+          {loading ? "Logging in..." : "Sign In"}
+        </Text>
+      </TouchableOpacity>
 
-      <Link href="/sign-up" style={styles.textButton}>
-        Create an account
-      </Link>
-    </View>
+      {/* Footer */}
+      <View className="mt-6 flex-row justify-center">
+        <Text className="text-gray-600">New user? </Text>
+        <TouchableOpacity onPress={() => router.push("/(auth)/sign-up")}>
+          <Text className="text-orange-600 font-semibold">
+            Create an account
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    justifyContent: 'center',
-    flex: 1,
-  },
-  label: {
-    color: 'gray',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: 'gray',
-    padding: 10,
-    marginTop: 5,
-    marginBottom: 20,
-    backgroundColor: 'white',
-    borderRadius: 5,
-  },
-  textButton: {
-    alignSelf: 'center',
-    fontWeight: 'bold',
-    color: Colors.light.tint,
-    marginVertical: 10,
-  },
-});
-
-export default SignInScreen;
+}

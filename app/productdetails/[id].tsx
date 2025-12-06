@@ -14,6 +14,7 @@ import { supabase } from "@/src/lib/supabase";
 import { Heart, Minus, Plus, Maximize2 } from "lucide-react-native";
 import Header from "@/components/Header";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function ProductDetailsScreen() {
@@ -25,7 +26,7 @@ export default function ProductDetailsScreen() {
   const [activeTab, setActiveTab] = useState("description");
   const [related, setRelated] = useState<any[]>([]);
 
-
+  
   // ======================================================
   // LOAD PRODUCT BY ID FROM SUPABASE
   // ======================================================
