@@ -27,7 +27,7 @@ export default function CartPage() {
   
   return (
     <View className="flex-1 bg-gray-100 p-4">
-      <Text className="text-2xl font-bold mb-4">My Cart</Text>
+      <Text className="text-2xl font-bold mb-4">My Cartss</Text>
 
       {cart.length === 0 ? (
         <Text className="text-center text-gray-500 mt-20">
