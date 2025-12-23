@@ -1,6 +1,6 @@
 import { Redirect, Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@/providers/AuthProviders";
+import { useAuth } from "@/providers/AuthProviders"; 
 
 export default function TabsLayout() {
    const { session } = useAuth();
@@ -61,7 +61,16 @@ export default function TabsLayout() {
           ),
         }}
       />
-
+      
+      <Tabs.Screen
+        name="newhome"
+        options={{
+          title: "NewHome",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
+        }}
+      />
      
     </Tabs>
   );

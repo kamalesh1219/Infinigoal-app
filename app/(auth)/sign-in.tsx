@@ -23,7 +23,6 @@ export default function SignInScreen() {
       email,
       password,
     });
-    console.log("🎉 LOGIN SUCCESS:", data.session);
 
     if (error) Alert.alert(error.message);
     setLoading(false);

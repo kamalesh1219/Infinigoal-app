@@ -5,6 +5,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { ThemeProvider, DefaultTheme } from "@react-navigation/native";
 import { useEffect } from "react";
 import AuthProvider from "@/providers/AuthProviders";
+import { CartProvider } from "@/providers/CartProvider";
  
 
 // Prevent auto-hide
@@ -29,6 +30,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
+    <CartProvider>
     <AuthProvider> 
       <Stack screenOptions={{ headerShown: false }}>   
           <Stack.Screen name="(auth)" />      
@@ -36,7 +38,8 @@ export default function RootLayout() {
           <Stack.Screen name="categorie/[slug]" />
           <Stack.Screen name="productdetails/[id]" />
       </Stack>
-    </AuthProvider>   
+    </AuthProvider>  
+    </CartProvider> 
     </ThemeProvider>
   );
 }
