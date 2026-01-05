@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, Stack } from "expo-router";
 import { supabase } from "@/src/lib/supabase";
-import { Heart, Minus, Plus, Maximize2 } from "lucide-react-native";
+import { Heart, Minus, Plus, Maximize2, ShoppingCart } from "lucide-react-native";
 import Header from "@/components/Header";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -129,20 +129,18 @@ export default function ProductDetailsScreen() {
               {product.title  || product.name}
             </Text>
 
-            <View className="flex-row items-center gap-2 mt-2">
-              {product.raw_price ? (
-                <Text className="text-gray-500 line-through text-lg">
-                  ₹{product.raw_price}
-                </Text>
-              ) : null}
-
-              <Text className="text-green-600 text-xl font-semibold">
-                {product.price_text}
-              </Text>
+            <View className="flex-row items-center gap-2 mt-2">             
+              <Text className="text-white text-xl font-semibold bg-green-600 rounded-md px-2 py-2 ">
+                ₹{product.price}
+              </Text>             
             </View>
 
+             <Text className="text-gray-500 line-through text-lg mt-2">
+                MRP  ₹{product.mrp}
+              </Text>
+
             {/* Short Description */}
-            <Text className="text-gray-700 mt-8 mb-6">
+            <Text className="text-gray-700 mt-5 mb-2">
               {product.description || "Product description coming soon."}
             </Text>
           </View>
@@ -151,26 +149,27 @@ export default function ProductDetailsScreen() {
               QUANTITY + ADD TO CART
           ============================ */}
           <View className="px-4 mt-6 flex-row items-center gap-3">
-            <View className="flex-row items-center bg-white rounded-full border px-4 py-2">
+            <View className="flex-row items-center bg-green-100 rounded-full px-4 py-2 gap-3">
               <TouchableOpacity
                 onPress={() => qty > 1 && setQty(qty - 1)}
-                className="p-1"
+                className="p-1 border border-green-900 rounded-full"
               >
-                <Minus size={20} color="black" />
+                <Minus size={18} color="black" />
               </TouchableOpacity>
 
               <Text className="text-lg font-semibold mx-3">{qty}</Text>
 
               <TouchableOpacity
                 onPress={() => setQty(qty + 1)}
-                className="p-1"
+                className="p-1 border border-green-900 rounded-full"
               >
-                <Plus size={20} color="black" />
+                <Plus size={18} color="black" />
               </TouchableOpacity>
             </View>
 
             <TouchableOpacity className="flex bg-lime-400 py-3 rounded-full items-center justify-center w-40">
-              <Text className="text-black font-bold text-base">
+              
+              <Text className="text-black font-bold text-sm">
                 ADD TO CART
               </Text>
             </TouchableOpacity>

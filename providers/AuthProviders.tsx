@@ -25,7 +25,7 @@ export default function AuthProvider({ children } : PropsWithChildren) {
       setLoading(false);
 
       if (data.session) {
-        router.replace("/(tabs)/home");
+        router.replace("/(tabs)/newhome");
       } else {
         router.replace("/(auth)/sign-in");
       }
@@ -38,7 +38,7 @@ export default function AuthProvider({ children } : PropsWithChildren) {
         setSession(session);
 
         if (session) {
-          router.replace("/(tabs)/home");
+          router.replace("/(tabs)/newhome");
         } else {
           router.replace("/(auth)/sign-in");
         }

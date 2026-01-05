@@ -2,12 +2,11 @@ import { View, Text,ScrollView,TouchableOpacity, Image,Dimensions, ActivityIndic
 import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "@/components/Header";
-import Searchbar from "@/components/Searchbar";
+import Searchbar from "@/components/ui/TrySearchbar";
 import BannerSlider from "@/components/BannerSlider";
 import KitchenCategories from "@/components/KitchenCategories";
 import HomeCategories from "@/components/HomeCategories";
 import SnacksCategories from "@/components/SnacksCategories";
-import { Cards } from "@/src/data/Categories";
 import SliderProduct from "@/components/SliderProduct";
 import RegularNeeds from "@/components/RegularNeeds";
 import Bestseller from "@/components/Bestseller";
@@ -18,6 +17,7 @@ import TopBrands from "@/components/TopBrands";
 import { supabase } from "@/src/lib/supabase";
 import { useEffect, useState } from "react";
 import { openCategory } from "@/src/utils/navigation";
+import TrySearchbar from "@/components/ui/TrySearchbar";
 
 
 export default function HomeScreen() {
@@ -31,9 +31,9 @@ export default function HomeScreen() {
     display_order: number;
   };
 
-  const [signatureCards, setSignatureCards] = useState<SignatureItem[]>([]);
-  const [sigLoading, setSigLoading] = useState(true);
-   
+   const [signatureCards, setSignatureCards] = useState<SignatureItem[]>([]);
+   const [sigLoading, setSigLoading] = useState(true);
+   const [search, setSearch] = useState("");
 
   const loadSignatureCards = async () => {
       setSigLoading(true);
@@ -66,8 +66,7 @@ export default function HomeScreen() {
       {/* Header */} 
       <Header/>
 
-      {/* Searchbar */} 
-      <Searchbar />
+     <TrySearchbar value={search} onChange={setSearch} />
 
       {/* SLIDER */}
       <BannerSlider />

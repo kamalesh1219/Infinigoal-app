@@ -2,9 +2,8 @@ import { View, Text,ScrollView,TouchableOpacity, Image,Dimensions, ActivityIndic
 import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "@/components/Header";
-import Searchbar from "@/components/Searchbar";
+
 import HomeCategories from "@/components/HomeCategories";
-import SnacksCategories from "@/components/SnacksCategories";
 import { supabase } from "@/src/lib/supabase";
 import { useEffect, useState } from "react";
 import TryRegularneeds from "@/components/ui/TryRegularneeds";
@@ -16,6 +15,9 @@ import TryRecentlyAdded from "@/components/ui/TryRecentlyAdded";
 import TrySliderProduct from "@/components/ui/TrySliderProduct";
 import TryBestseller from "@/components/ui/TryBestseller";
 import OffersZone from "@/components/OffersZone";
+import Footer from "@/components/Footer";
+import Searchbar from "@/components/ui/TrySearchbar";
+import TrySearchbar from "@/components/ui/TrySearchbar";
 
 
 export default function HomeScreen() {
@@ -30,8 +32,8 @@ export default function HomeScreen() {
   };
 
   const [signatureCards, setSignatureCards] = useState<SignatureItem[]>([]);
-  const [sigLoading, setSigLoading] = useState(true);
-   
+   const [sigLoading, setSigLoading] = useState(true);
+   const [search, setSearch] = useState("");
 
   const loadSignatureCards = async () => {
       setSigLoading(true);
@@ -60,12 +62,15 @@ export default function HomeScreen() {
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
+        stickyHeaderIndices={[0]} 
       >
-      {/* Header */} 
-      <Header/>
-
-      {/* Searchbar */} 
-      <Searchbar />
+      {/* 🔒 STICKY HEADER BLOCK */}
+        <View className="bg-white ">
+          {/* Header */} 
+          <Header/>
+          {/* Searchbar */} 
+          <TrySearchbar value={search} onChange={setSearch} />
+        </View>
 
       {/* SLIDER */}
       <TryBannerSlider />
@@ -92,6 +97,8 @@ export default function HomeScreen() {
     <TryBestseller/>
 
     <OffersZone/>
+
+    <Footer />
   </ScrollView> 
     </SafeAreaView>
   );

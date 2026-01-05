@@ -4,21 +4,39 @@ import Swiper from "react-native-swiper";
 
 const { width } = Dimensions.get("window");
 
-export default function TryBannerSlider () {
+export default function TryBannerSlider() {
   const banners = [
     require("../../assets/banners/banner1.png"), // Mega Sale
-    require("../../assets/banners/banner1.png"), // Kerala Spices
-    require("../../assets/banners/banner1.png"), // Sakthi Masala
+    require("../../assets/banners/banner2.png"), // Kerala Spices
+    require("../../assets/banners/banner3.png"), // Sakthi Masala
   ];
 
   return (
     <>
-    <View className="h-80 bg-orange-300 justify-center">
-       <Text className="text-white font-semibold text-3xl text-center">BannerSlider</Text>   
+    <View className="h-80">
+      <Swiper
+        autoplay
+        autoplayTimeout={3}
+        showsPagination={true}
+        dotColor="#ccc"
+        activeDotColor="#FF7B00"
+        loop={true}
+      >
+        {banners.map((img, index) => (
+          <Image
+            key={index}
+            source={img}
+            style={{
+              width: width,
+              height: 300,
+              resizeMode: "contain",
+              borderRadius: 12,
+            }}
+          />
+        ))}
+      </Swiper>    
     </View>
-     <View className="bg-red-500 items-center">
-       
-      </View>
+     
     </>  
   );
 }

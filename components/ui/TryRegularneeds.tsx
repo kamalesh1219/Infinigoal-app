@@ -10,6 +10,8 @@ import {
 import { Heart, Plus } from "lucide-react-native";
 import { supabase } from "@/src/lib/supabase";
 import { openProduct } from "@/src/utils/navigation";
+import { router } from "expo-router";
+import { useCart } from "@/providers/CartProvider";
 
 type Product = {
   id: string;
@@ -23,6 +25,9 @@ type Product = {
 export default function TryRegularneeds() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [qtyMap, setQtyMap] = useState<Record<string, number>>({});
+
+  const { addToCart: addItemToCart } = useCart();
 
   useEffect(() => {
     fetchProducts();
@@ -39,6 +44,34 @@ export default function TryRegularneeds() {
     setLoading(false);
   }
 
+  const handleAddToCart = (item: Product) => {
+    addItemToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image_url: item.image_url,
+      mrp: item.mrp,
+    });
+
+     setQtyMap((prev) => ({
+      ...prev,
+      [item.id]: (prev[item.id] || 0) + 1,
+    }));
+  };
+   
+  const handleMinus = (item: Product) => {
+  setQtyMap((prev) => {
+    const current = prev[item.id] || 0;
+    if (current <= 1) {
+      const copy = { ...prev };
+      delete copy[item.id];
+      return copy;
+    }
+    return { ...prev, [item.id]: current - 1 };
+  });
+  };
+
+
   if (loading) {
     return (
       <View className="py-6">
@@ -51,7 +84,7 @@ export default function TryRegularneeds() {
     <View className="mt-10">
       
         <Text className="text-xl font-semibold mb-5 mx-4">
-          Your Regular Needs
+          Your Regular Need
         </Text>
 
       <FlatList
@@ -82,11 +115,32 @@ export default function TryRegularneeds() {
                 </View>
 
                 {/* Plus Button */}
-                 <TouchableOpacity>
-                  <View className="absolute bottom-2 right-2 border-2 border-pink-500 bg-white rounded-xl px-3 py-2">
-                    <Plus size={20} color="#ec4899" />
-                  </View>
-                </TouchableOpacity>
+                <View className="absolute bottom-2 right-2">
+                    {!qtyMap[item.id] ? (
+                      /* ADD BUTTON */
+                      <TouchableOpacity
+                        onPress={() => handleAddToCart(item)}
+                        className="border-2 border-pink-500 bg-white rounded-xl px-3 py-2"
+                      >
+                        <Plus size={20} color="#ec4899" />
+                      </TouchableOpacity>
+                    ) : (
+                      /* COUNTER */
+                      <View className="flex-row items-center border-2 border-pink-500 bg-white rounded-xl px-2 py-1">
+                        <TouchableOpacity onPress={() => handleMinus(item)}>
+                          <Text className="text-pink-600 text-xl font-bold px-2">−</Text>
+                        </TouchableOpacity>
+
+                        <Text className="font-bold px-2">
+                          {qtyMap[item.id]}
+                        </Text>
+
+                        <TouchableOpacity onPress={() => handleAddToCart(item)}>
+                          <Text className="text-pink-600 text-xl font-bold px-2">+</Text>
+                        </TouchableOpacity>
+                    </View>
+                    )}
+                 </View>
               </View>
 
               {/* PRICE */}

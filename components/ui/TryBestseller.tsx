@@ -36,8 +36,9 @@ export default function TryBestseller() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+
   const { addToCart: addItemToCart } = useCart();
-  
+
   // Fetch from Supabase
   async function loadBestProducts() {
     const { data, error } = await supabase
@@ -67,8 +68,6 @@ export default function TryBestseller() {
     slides.push(products.slice(i, i + 2));
   }
 
-  
-
    // ✅ SAVE IT HERE (inside component)
   const handleAddToCart = (prod: Product) => {
     addItemToCart({
@@ -76,6 +75,7 @@ export default function TryBestseller() {
       name: prod.name,
       price: prod.price,
       image_url: prod.image_url,
+      mrp: prod.mrp,
     });
 
     router.push("/cart");

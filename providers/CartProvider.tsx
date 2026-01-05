@@ -1,9 +1,11 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type CartItem = {
   id: string;
   name: string;
   price: number;
+  mrp: number;   
   image_url: string;
   qty: number;
 };
@@ -16,9 +18,31 @@ type CartContextType = {
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
+const CART_STORAGE_KEY = "@infinigoal_cart";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(CART_STORAGE_KEY);
+        if (stored) setCart(JSON.parse(stored));
+      } catch (e) {
+        console.log("Failed to load cart", e);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await AsyncStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+      } catch (e) {
+        console.log("Failed to save cart", e);
+      }
+    })();
+  }, [cart]);
 
   // ADD TO CART
   const addToCart = (item: Omit<CartItem, "qty">) => {
@@ -31,7 +55,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
-      return [...prev, { ...item, qty: 1 }];
+      return [...prev, { ...item,mrp: Number(item.mrp) || item.price, qty: 1 }];
     });
   };
 
@@ -40,7 +64,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCart((prev) => prev.filter((p) => p.id !== id));
   };
 
-  const clearCart = () => setCart([]);
+  const clearCart = async () => {
+    setCart([]);
+    await AsyncStorage.removeItem(CART_STORAGE_KEY);
+  };
 
   return (
     <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>

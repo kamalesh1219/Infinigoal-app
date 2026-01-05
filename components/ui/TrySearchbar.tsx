@@ -5,11 +5,14 @@ import { ShoppingCart } from "lucide-react-native";
 import { router } from "expo-router";
 import { useCart } from "@/providers/CartProvider";
 
+type Props = {
+  value: string;
+  onChange: (text: string) => void;
+};
 
-
-export default function Searchbar() {
+export default function TrySearchbar({ value, onChange }: Props) {
   const { cart } = useCart();
-    const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
   return (
     <View className="px-4 my-3 flex-row items-center">
@@ -18,6 +21,8 @@ export default function Searchbar() {
         <Ionicons name="search" size={20} color="#6B7280" />
         <TextInput
           placeholder="What’s on your list?"
+          value={value}
+          onChangeText={onChange}
           className="ml-2 flex-1 text-gray-700"
         />
       </View>
