@@ -38,7 +38,7 @@ export default function Footer() {
             </TouchableOpacity>
         </View>
 
-        <View className="">
+        <View className="mb-8">
             <Text className="text-white font-medium text-lg ">NewsLetter</Text>  
             <TextInput
             className="bg-white w-[70%] h-[10%] mb-4 mt-5"
