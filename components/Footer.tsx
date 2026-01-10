@@ -46,7 +46,7 @@ export default function Footer() {
             />
             <TextInput
             className="bg-white w-[70%] h-[10%]"
-            placeholder="sign up"
+            placeholder="sign up "
             />
         </View>
       </View>
