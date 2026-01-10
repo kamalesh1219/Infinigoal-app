@@ -49,7 +49,6 @@ export default function Footer() {
             placeholder="sign up"
             />
         </View>
-
       </View>
     );
 } 
