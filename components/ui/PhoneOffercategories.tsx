@@ -75,7 +75,7 @@ export default function PhoneOffercategories() {
           {/* Outer Blue Border */}
           <View className="border-4 border-blue-500 rounded-[32px] p-1 bg-white">
             {/* iPhone Body */}
-            <View className={`bg-[#F6D9B8] w-32 h-40 rounded-[28px] overflow-hidden`}>
+            <View className={`bg-[#F6D9B8] w-32 h-40 rounded-[28px] overflow-hidden `}>
                {/* Featured Badge */}
               <View className="bg-white px-3 py-1 rounded-t-sm rounded-xl self-center">
                 <Text className="text-red-500 text-xs font-semibold">

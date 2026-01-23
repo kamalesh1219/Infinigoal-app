@@ -6,16 +6,21 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeft, Book, Bookmark, ListOrdered, LucideListOrdered, ShipIcon, ShoppingBasket, ShoppingBasketIcon, ShoppingCart } from "lucide-react-native";
 import { router, useFocusEffect } from "expo-router";
 import { useCart } from "@/providers/CartProvider";
 import { supabase } from "@/src/lib/supabase";
+import { getCurrentUser } from "@/src/services/auth";
+
+
 
 export default function CartPage() {
-  const { cart, addToCart, decrementQty ,removeFromCart } = useCart();
+  const { cart, addToCart, decrementQty ,removeFromCart, clearCart, } = useCart();
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
+  const [placingOrder, setPlacingOrder] = useState(false);
 
   const itemTotal = cart.reduce(
     (sum, i) => sum + i.price * i.qty,
@@ -31,7 +36,8 @@ export default function CartPage() {
   cart.forEach((i) => {
   console.log("CART ITEM:", i.name, "MRP:", i.mrp);
   });
-
+  
+  /* ================= ADDRESS ================= */
   async function loadSelectedAddress() {
     const { data, error } = await supabase
       .from("addresses")
@@ -50,12 +56,100 @@ export default function CartPage() {
     }, [])
   );
 
+  /* ================= PLACE ORDER ================= */
+   const placeOrder = async () => {
+    try{
+      const user = await getCurrentUser();
+        if (!user){
+          Alert.alert("Login required", "Please login to place order");
+          return;
+        }
+        if (!selectedAddress) {
+          Alert.alert("Select Address", "Please select delivery address");
+          return;
+      }
+
+    if (cart.length === 0) {
+        Alert.alert("Cart empty");
+        return;
+      }
+
+   setPlacingOrder(true);
+   
+  /* 1️⃣ CREATE ORDER */
+  const { data:order ,error:orderError } = await supabase 
+   .from("orders")
+   .insert([
+    {
+      user_id: user.id,
+      total_amount: itemTotal,
+      status: "placed",
+    },
+   ])
+   .select()
+   .single();
+   
+   if (orderError) {
+      console.log(orderError);
+      Alert.alert("Order failed");
+      setPlacingOrder(false);
+    return;
+   }
+   
+   /* 2️⃣ ORDER ITEMS */
+      const orderItems = cart.map((item) => ({
+        order_id: order.id,
+        product_id: item.id,
+        name: item.name,
+        price: item.price,
+        mrp: item.mrp,
+        qty: item.qty,
+        image_url: item.image_url,
+      }));
+     
+    const { error: itemsError } = await supabase
+        .from("order_items")
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.log(itemsError);
+        Alert.alert("Failed to save order items");
+        setPlacingOrder(false);
+        return;
+      }
+
+
+   /* 3️⃣ CLEAR CART */
+    clearCart();
+
+   /* 4️⃣ GO TO ORDERS */
+    router.replace("/orders");
+  } catch (err) {
+      console.log(err);
+      Alert.alert("Something went wrong");
+    } finally {
+      setPlacingOrder(false);
+    }
+  };
+
   if (cart.length === 0) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center">
-        <Text className="text-lg text-gray-500">
+        <Text className="text-xl font-bold text-gray-800 text-center">
           Your cart is empty 🛒
         </Text>
+        <Text className="text-gray-500 text-center mt-2">
+          Add groceries now and enjoy  
+          exclusive offers only on InfiniGoal.
+        </Text>
+         <TouchableOpacity
+            onPress={() => router.push("/newhome")}
+            className="bg-pink-600 px-6 py-3 rounded-full mt-6"
+          >
+            <Text className="text-white font-bold">
+              Shop with InfiniGoal 🛍️
+            </Text>
+          </TouchableOpacity>
       </SafeAreaView>
     );
   }
@@ -198,7 +292,7 @@ export default function CartPage() {
               Savings on this order
             </Text>
             <Text className="font-bold text-green-700">
-              ₹193
+              ₹{savings}
             </Text>
           </View>
         </View>
@@ -240,17 +334,31 @@ export default function CartPage() {
         )}
       </ScrollView>
 
-      {/* BOTTOM CTA */}
+     {/* BOTTOM CTA */}
       <View className="absolute bottom-0 left-0 right-0 bg-white px-4 py-4 border-t border-gray-200">
-        <TouchableOpacity
-          onPress={() => router.push("/address")}
-          className="bg-pink-600 py-4 rounded-xl"
-        >
-          <Text className="text-white text-center font-bold text-lg">
-            Select Address
-          </Text>
-        </TouchableOpacity>
-      </View>     
+
+        {!selectedAddress ? (
+          <TouchableOpacity
+            onPress={() => router.push("/address")}
+            className="bg-pink-600 py-4 rounded-xl"
+          >
+            <Text className="text-white text-center font-bold text-lg">
+              Select Address
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={placeOrder}
+            disabled={placingOrder}
+            className="bg-pink-600 py-4 rounded-xl"
+          >
+            <Text className="text-white text-center font-bold text-lg">
+              {placingOrder ? "Placing Order..." : "Place Order"}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+      </View>  
 
     </SafeAreaView>
   );
