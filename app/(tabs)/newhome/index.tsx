@@ -18,6 +18,9 @@ import OffersZone from "@/components/OffersZone";
 import Footer from "@/components/Footer";
 import Searchbar from "@/components/ui/TrySearchbar";
 import TrySearchbar from "@/components/ui/TrySearchbar";
+import Iphonecategories from "@/components/ui/Iphonecategories";
+import Offercategories from "@/components/ui/Offercategories";
+import PhoneOffercategories from "@/components/ui/PhoneOffercategories";
 
 
 export default function HomeScreen() {
@@ -74,6 +77,10 @@ export default function HomeScreen() {
 
       {/* SLIDER */}
       <TryBannerSlider />
+     
+     <PhoneOffercategories/>      
+     <Offercategories/>
+     <Iphonecategories/>   
 
      {/* Categories */}
      <TryKitchencategories />
@@ -97,7 +104,7 @@ export default function HomeScreen() {
     <TryBestseller/>
 
     <OffersZone/>
-
+    
     <Footer />
   </ScrollView> 
     </SafeAreaView>

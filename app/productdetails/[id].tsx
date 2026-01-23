@@ -15,6 +15,7 @@ import { Heart, Minus, Plus, Maximize2, ShoppingCart } from "lucide-react-native
 import Header from "@/components/Header";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCart } from "@/providers/CartProvider";
 
 
 export default function ProductDetailsScreen() {
@@ -25,6 +26,7 @@ export default function ProductDetailsScreen() {
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [related, setRelated] = useState<any[]>([]);
+  const { cart, addToCart, decrementQty, removeFromCart } = useCart();
 
   
   // ======================================================
@@ -65,6 +67,12 @@ export default function ProductDetailsScreen() {
   useEffect(() => {
     loadProduct();
   }, [id]);
+
+
+  const getQty = (productId: string) => {
+    const item = cart.find((c) => c.id === productId);
+    return item ? item.qty : 0;
+  };
 
   // ======================================================
   // LOADING UI
@@ -149,31 +157,75 @@ export default function ProductDetailsScreen() {
               QUANTITY + ADD TO CART
           ============================ */}
           <View className="px-4 mt-6 flex-row items-center gap-3">
-            <View className="flex-row items-center bg-green-100 rounded-full px-4 py-2 gap-3">
+            {getQty(product.id) === 0 ? (
               <TouchableOpacity
-                onPress={() => qty > 1 && setQty(qty - 1)}
-                className="p-1 border border-green-900 rounded-full"
+                onPress={() =>
+                  addToCart({
+                    id: product.id,
+                    name: product.name ?? product.title,
+                    price: product.price,
+                    mrp: product.mrp,
+                    image_url: product.image_url,
+                  })
+                }
+                className="flex bg-lime-400 py-3 rounded-full items-center justify-center w-56"
+                activeOpacity={0.85}
               >
-                <Minus size={18} color="black" />
+                <Text className="text-black font-bold text-sm">
+                  ADD TO CART
+                </Text>
               </TouchableOpacity>
+            ) : (
+              <>
+                {/* QTY CONTROLLER */}
+                <View className="flex-row items-center bg-green-100 rounded-full px-4 py-2 gap-3">
+                  <TouchableOpacity
+                    onPress={() =>
+                      getQty(product.id) === 1
+                        ? removeFromCart(product.id)
+                        : decrementQty(product.id)
+                    }
+                    className="p-1 border border-green-900 rounded-full"
+                    activeOpacity={0.85}
+                  >
+                    <Minus size={18} color="black" />
+                  </TouchableOpacity>
 
-              <Text className="text-lg font-semibold mx-3">{qty}</Text>
+                  <Text className="text-lg font-semibold mx-3">
+                    {getQty(product.id)}
+                  </Text>
 
-              <TouchableOpacity
-                onPress={() => setQty(qty + 1)}
-                className="p-1 border border-green-900 rounded-full"
-              >
-                <Plus size={18} color="black" />
-              </TouchableOpacity>
-            </View>
+                  <TouchableOpacity
+                    onPress={() =>
+                      addToCart({
+                        id: product.id,
+                        name: product.name ?? product.title,
+                        price: product.price,
+                        mrp: product.mrp,
+                        image_url: product.image_url,
+                      })
+                    }
+                    className="p-1 border border-green-900 rounded-full"
+                    activeOpacity={0.85}
+                  >
+                    <Plus size={18} color="black" />
+                  </TouchableOpacity>
+                </View>
 
-            <TouchableOpacity className="flex bg-lime-400 py-3 rounded-full items-center justify-center w-40">
-              
-              <Text className="text-black font-bold text-sm">
-                ADD TO CART
-              </Text>
-            </TouchableOpacity>
+                {/* GO TO CART BUTTON */}
+                <TouchableOpacity
+                  onPress={() => router.push("/cart")}
+                  className="bg-lime-400 px-5 py-3 rounded-full"
+                  activeOpacity={0.85}
+                >
+                  <Text className="text-black font-bold text-sm">
+                    VIEW CART
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
+         
 
           {/* ADD TO WISHLIST */}
         <TouchableOpacity className="flex-row items-center gap-2 px-4 mt-4">
@@ -307,9 +359,9 @@ export default function ProductDetailsScreen() {
 
                   {/* Price */}
                   <View className="flex-row items-center gap-2 mb-2">
-                    {item.raw_price && (
+                    {item.price && (
                       <Text className="text-gray-400 line-through text-sm">
-                        ₹{item.raw_price}
+                        ₹{item.price}
                       </Text>
                     )}
 
@@ -320,13 +372,48 @@ export default function ProductDetailsScreen() {
 
                   {/* Qty Selector */}
                   <View className="flex-row items-center justify-between border rounded-full px-3 py-1 mb-2 w-32">
-                    <TouchableOpacity><Text className="text-lg">−</Text></TouchableOpacity>
-                    <Text className="text-lg">1</Text>
-                    <TouchableOpacity><Text className="text-lg">+</Text></TouchableOpacity>
+                    <TouchableOpacity
+                     onPress={() =>
+                      getQty(item.id) === 1
+                        ? removeFromCart(item.id)
+                        : decrementQty(item.id)
+                    }
+                    >
+                      <Text className="text-lg">−</Text>
+                    </TouchableOpacity>
+
+                    <Text className="text-lg">
+                      {getQty(item.id) === 0 ? 0 : getQty(item.id)}
+                    </Text>
+
+                    <TouchableOpacity
+                     onPress={() =>
+                      addToCart({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        mrp: item.mrp,
+                        image_url: item.image_url,
+                      })
+                    }
+                    >
+                      <Text className="text-lg">+</Text>
+                    </TouchableOpacity>
                   </View>
 
                   {/* Add to cart */}
-                  <TouchableOpacity className="bg-yellow-300 rounded-full py-2 items-center w-40 mb-4">
+                  <TouchableOpacity 
+                   onPress={() =>
+                      addToCart({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        mrp: item.mrp,
+                        image_url: item.image_url,
+                      })
+                    }
+                   className="bg-yellow-300 rounded-full py-2 items-center w-36 mb-4"
+                  >
                     <Text className="font-semibold text-black">Add to cart</Text>
                   </TouchableOpacity>
                 </TouchableOpacity>

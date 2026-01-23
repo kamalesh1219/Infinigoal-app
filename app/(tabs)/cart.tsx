@@ -14,7 +14,7 @@ import { useCart } from "@/providers/CartProvider";
 import { supabase } from "@/src/lib/supabase";
 
 export default function CartPage() {
-  const { cart, addToCart, removeFromCart } = useCart();
+  const { cart, addToCart, decrementQty ,removeFromCart } = useCart();
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
 
   const itemTotal = cart.reduce(
@@ -117,7 +117,7 @@ export default function CartPage() {
                   onPress={() =>
                     prod.qty === 1
                       ? removeFromCart(prod.id)
-                      : removeFromCart(prod.id)
+                      : decrementQty(prod.id) 
                   }
                   className="px-3 py-1"
                 >
@@ -185,15 +185,14 @@ export default function CartPage() {
           <View className="border-t border-gray-200 my-3" />
 
           <View className="flex-row justify-between my-2">
-            <Text className="font-bold text-lg">To Pay</Text>
+            <Text className="font-bold text-lg">To Pay </Text>
             <Text className="font-bold text-lg">
               ₹{itemTotal}
             </Text>
           </View>
-        </View>
-
-        {/* SAVINGS */}
-        <View className="bg-green-100 mx-4 mt-4 rounded-xl px-4 py-4">
+ 
+          {/* SAVINGS */}
+        <View className="bg-green-100  mt-2 rounded-xl px-4 py-4">
           <View className="flex-row justify-between">
             <Text className="font-semibold">
               Savings on this order
@@ -203,6 +202,10 @@ export default function CartPage() {
             </Text>
           </View>
         </View>
+
+        </View>
+
+       
 
         {/* SELECTED ADDRESS */}
         {selectedAddress && (

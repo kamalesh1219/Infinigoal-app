@@ -28,9 +28,7 @@ export default function TryRecentlyAdded() {
 
    const [products, setProducts] = useState<Product[]>([]);
    const [loading, setLoading] = useState(true);
-   const [qtyMap, setQtyMap] = useState<Record<string, number>>({});
-
-   const { addToCart: addItemToCart } = useCart();
+   const { cart, addToCart, decrementQty, removeFromCart } = useCart();
 
    useEffect(() => {
      fetchProducts();
@@ -46,33 +44,11 @@ export default function TryRecentlyAdded() {
      if (!error && data) setProducts(data);
      setLoading(false);
    }
-
-  const handleAddToCart = (item: Product) => {
-    addItemToCart({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      image_url: item.image_url,
-      mrp: item.mrp,
-    });
-
-     setQtyMap((prev) => ({
-      ...prev,
-      [item.id]: (prev[item.id] || 0) + 1,
-    }));
-  };
    
-  const handleMinus = (item: Product) => {
-    setQtyMap((prev) => {
-      const current = prev[item.id] || 0;
-      if (current <= 1) {
-        const copy = { ...prev };
-        delete copy[item.id];
-        return copy;
-      }
-      return { ...prev, [item.id]: current - 1 };
-    });
-  };
+   const getQty = (productId: string) => {
+      const item = cart.find((c) => c.id === productId);
+      return item ? item.qty : 0;
+    };
 
 
   // ==========================================
@@ -123,10 +99,18 @@ export default function TryRecentlyAdded() {
 
                 {/* Plus Button */}
                 <View className="absolute bottom-2 right-2">
-                    {!qtyMap[item.id] ? (
+                    {getQty(item.id) === 0 ?  (
                       /* ADD BUTTON */
                       <TouchableOpacity
-                        onPress={() => handleAddToCart(item)}
+                        onPress={() => 
+                         addToCart({
+                          id: item.id,
+                          name: item.name,
+                          price: item.price,
+                          mrp: item.mrp,
+                          image_url: item.image_url,
+                        })
+                        }
                         className="border-2 border-pink-500 bg-white rounded-xl px-3 py-2"
                       >
                         <Plus size={20} color="#ec4899" />
@@ -134,15 +118,29 @@ export default function TryRecentlyAdded() {
                     ) : (
                       /* COUNTER */
                       <View className="flex-row items-center border-2 border-pink-500 bg-white rounded-xl px-2 py-1">
-                        <TouchableOpacity onPress={() => handleMinus(item)}>
+                        <TouchableOpacity 
+                           onPress={() => 
+                            getQty(item.id) === 1
+                            ? removeFromCart(item.id)
+                            : decrementQty(item.id)
+                           }>
                           <Text className="text-pink-600 text-xl font-bold px-2">−</Text>
                         </TouchableOpacity>
 
                         <Text className="font-bold px-2">
-                          {qtyMap[item.id]}
+                          {getQty(item.id)}
                         </Text>
 
-                        <TouchableOpacity onPress={() => handleAddToCart(item)}>
+                        <TouchableOpacity
+                         onPress={() => 
+                          addToCart({
+                            id: item.id,
+                            name: item.name,
+                            price: item.price,
+                            mrp: item.mrp,
+                            image_url: item.image_url,
+                          })
+                         }>
                           <Text className="text-pink-600 text-xl font-bold px-2">+</Text>
                         </TouchableOpacity>
                     </View>

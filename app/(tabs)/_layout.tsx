@@ -178,27 +178,27 @@ export default function TabsLayout() {
       />
 
       <Tabs.Screen
-        name="hotdeals"
+        name="cart"
         options={{
-          title: "Hot Deals",
-          tabBarIcon: ({ color,size, focused }) => (
+          title: "Cart",
+          tabBarIcon: ({ color, size, focused }) => (
             <View
-            style={{
-              backgroundColor: focused ? "#FFF1E6" : "transparent",
-              padding: 8,
-              borderRadius: 20,
-              width: size + 12,
-              height: size + 12,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Ionicons
-              name={focused ? "flame" : "flame-outline"}
-              size={22}
-              color={color}
-            />
-          </View>
+              style={{
+                backgroundColor: focused ? "#E6F0C9" : "transparent",
+                padding: 8,
+                borderRadius: 20,
+                width: size + 12,
+                height: size + 12,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons
+                name={focused ? "cart" : "cart-outline"}
+                size={22}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -230,6 +230,35 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="orders"
+        options={{
+          title: "Orders",
+          tabBarIcon: ({ color,size, focused }) => (
+          <View
+            style={{
+              backgroundColor: focused ? "#E6F0C9" : "transparent",
+              padding: 8,
+              borderRadius: 20,
+              width: size + 12,
+              height: size + 12,
+              justifyContent: "center",
+              alignItems: "center",
+               
+            }}
+          >
+            <Ionicons
+              name={focused ? "bag" : "bag-outline"}
+              size={22}
+              color={color}
+            />
+          </View>
+            
+          ),
+        }}
+      />
+
     </Tabs>
   );
 }

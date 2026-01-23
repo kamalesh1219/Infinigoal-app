@@ -19,7 +19,7 @@ type Product = {
   price: number;
   mrp: number;
   price_text?: string;
-  category_slug: string;
+  subcategory_slug: string;
 };
 
 export default function CategoryPage() {
@@ -38,8 +38,8 @@ export default function CategoryPage() {
 
     const { data, error } = await supabase
       .from("products")
-      .select("id,name,image_url,price,mrp,price_text,category_slug")
-      .eq("category_slug", slug)
+      .select("id,name,image_url,price,mrp,price_text,subcategory_slug")
+      .eq("subcategory_slug", slug)   // ✅ FIX HERE
       .order("created_at", { ascending: false });
 
     if (!error && data) {
@@ -52,6 +52,7 @@ export default function CategoryPage() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ padding: 16 }}>
+
         {/* HEADER */}
         <Text className="text-3xl font-bold text-gray-900">
           Category: {slug?.toUpperCase()}
@@ -61,17 +62,6 @@ export default function CategoryPage() {
           Home / {slug}
         </Text>
 
-        {/* FILTER / SORT */}
-        <View className="flex-row justify-between mt-5 mb-4">
-          <TouchableOpacity className="border px-4 py-2 rounded-xl">
-            <Text className="font-semibold">Filter</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="border px-4 py-2 rounded-xl">
-            <Text className="font-semibold">Default sorting</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* LOADING */}
         {loading && (
           <View className="mt-10">
@@ -79,31 +69,30 @@ export default function CategoryPage() {
           </View>
         )}
 
-        {/* EMPTY STATE */}
+        {/* EMPTY */}
         {!loading && products.length === 0 && (
           <Text className="text-center text-gray-500 mt-20">
             No products found in this category
           </Text>
         )}
 
-        {/* PRODUCT GRID */}
-        <View className="flex-row flex-wrap justify-between mt-2">
+        {/* PRODUCTS */}
+        <View className="flex-row flex-wrap justify-between mt-4">
           {products.map((item) => (
             <View
               key={item.id}
-              className="w-[48%] bg-white rounded-xl p-3 mb-5 shadow-sm border border-gray-100"
+              className="w-[48%] bg-white rounded-xl p-3 mb-5 border border-gray-100"
             >
               <Image
                 source={{ uri: item.image_url }}
-                className="w-full h-40 rounded-lg"
+                className="w-full h-44 rounded-lg"
                 resizeMode="contain"
               />
 
-              <Text className="mt-2 font-semibold text-gray-800" numberOfLines={2}>
+              <Text className="mt-4 font-semibold text-gray-800" numberOfLines={2}>
                 {item.name}
               </Text>
 
-              {/* PRICE */}
               <View className="flex-row items-center mt-1">
                 <Text className="text-green-700 font-bold mr-2">
                   ₹{item.price}
@@ -112,14 +101,9 @@ export default function CategoryPage() {
                   ₹{item.mrp}
                 </Text>
               </View>
+ 
+              
 
-              {item.price_text && (
-                <Text className="text-xs text-gray-500 mt-1">
-                  {item.price_text}
-                </Text>
-              )}
-
-              {/* ADD TO CART */}
               <TouchableOpacity
                 onPress={() =>
                   addToCart({

@@ -13,6 +13,7 @@ type CartItem = {
 type CartContextType = {
   cart: CartItem[];
   addToCart: (item: Omit<CartItem, "qty">) => void;
+  decrementQty:(id: string) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
 };
@@ -59,6 +60,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const decrementQty = (id: string) => {
+      setCart((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, qty: item.qty - 1 }
+            : item
+        )
+      );
+    };
+
   // REMOVE ITEM
   const removeFromCart = (id: string) => {
     setCart((prev) => prev.filter((p) => p.id !== id));
@@ -70,7 +81,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, decrementQty }}>
       {children}
     </CartContext.Provider>
   );

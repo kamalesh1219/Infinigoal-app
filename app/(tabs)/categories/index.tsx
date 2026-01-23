@@ -1,30 +1,45 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Header from "@/components/Header";
+import TrySearchbar from "@/components/ui/TrySearchbar";
+import Searchbar from "@/components/Searchbar";
+import Offercategories from "@/components/ui/Offercategories";
+import TryKitchencategories from "@/components/ui/TryKitchencategories";
+import HomeCategories from "@/components/HomeCategories";
+import TrySnacksCategories from "@/components/ui/TrySnacksCategories";
 
-const categories = [
-  { id: "oil", name: "Oils" },
-  { id: "rice", name: "Rice" },
-  { id: "masala", name: "Masala" },
-  { id: "dryfruits", name: "Dry Fruits" },
-];
 
 export default function Categories() {
   return (
-    <SafeAreaView style={styles.container}>
-      {categories.map((c) => (
-        <Link href={`/ (tabs)/categories/${c.id}`} asChild key={c.id}>
-          <TouchableOpacity style={styles.box}>
-            <Text style={styles.text}>{c.name}</Text>
-          </TouchableOpacity>
-        </Link>
-      ))}
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        stickyHeaderIndices={[0]} 
+      >
+       
+       <View className="bg-white ">
+          {/* Header */} 
+          <Header/>
+          {/* Searchbar */} 
+          <Searchbar/>
+      </View>
+
+      <Offercategories/>      
+      {/* Categories */}
+      <TryKitchencategories />
+
+      {/* Use same component with different title & data */}
+      <HomeCategories groupName="Home & Care" />
+
+      <HomeCategories groupName="Personal Care" />
+
+      {/* SnacksCategories */}
+      <TrySnacksCategories />
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: 20, flex: 1 },
-  box: { padding: 20, borderWidth: 1, borderColor: "#ddd", borderRadius: 10, marginBottom: 12 },
-  text: { fontSize: 18, fontWeight: "600" },
-});
+
