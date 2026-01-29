@@ -15,6 +15,7 @@ type OfferCategory = {
   title: string;
   slug: string;
   image_url: string;
+  bg_color: string; 
 };
 
 export default function PhoneOffercategories() {
@@ -28,7 +29,7 @@ export default function PhoneOffercategories() {
    const loadOfferCategories = async () => {
     const { data, error } = await supabase
       .from("offer_categories")
-      .select("id,title,slug,image_url")
+      .select("id,title,slug,image_url,bg_color")
       .order("display_order", { ascending: true });   
 
     if (error) {
@@ -49,7 +50,7 @@ export default function PhoneOffercategories() {
   }
 
   return (
-     <View className="mb-8 mt-2 bg-[#FBEBDD] rounded-3xl p-5">
+     <View className="mb-8 bg-[#FBEBDD] rounded-3xl p-5">
 
       {/* HEADER */}
       <Text className="text-2xl font-bold text-gray-900">
@@ -69,26 +70,38 @@ export default function PhoneOffercategories() {
           <TouchableOpacity
             key={item.id}
             onPress={() => router.push(`/categorie/${item.slug}`)}
-            className="w-36 items-center my-5"
+            className="w-36 my-5"
             activeOpacity={0.8}
           >
           {/* Outer Blue Border */}
-          <View className="border-4 border-blue-500 rounded-[32px] p-1 bg-white">
+          <View className="border-[3px] border-blue-500 rounded-[30px] p-1 bg-white">
+
             {/* iPhone Body */}
-            <View className={`bg-[#F6D9B8] w-32 h-40 rounded-[28px] overflow-hidden `}>
+            <View
+             style={{ backgroundColor: item.bg_color || "#F6D9B8" }}
+             className={`w-32 h-40 rounded-[22px] overflow-hidden `}
+            >
+
                {/* Featured Badge */}
-              <View className="bg-white px-3 py-1 rounded-t-sm rounded-xl self-center">
+              <View className="bg-white px-3 py-0.5 rounded-full absolute top-1 left-1/2 -translate-x-1/2">
                 <Text className="text-red-500 text-xs font-semibold">
                   Featured
                 </Text>
               </View>
 
-              {/* Content */}
-              <View className="flex-1 items-center justify-center px-2">    
+            {/* 🏷 TITLE */}
+            <Text
+              className="text-[#1F2937] text-base font-semibold text-center mt-8  px-1"
+              numberOfLines={2}
+            >
+              {item.title}
+            </Text>
 
-                <Image
+              {/* Content */}
+              <View className="overflow-hidden items-center justify-end">    
+               <Image
                   source={{ uri: item.image_url }}
-                  className="w-28 h-28"
+                  className="w-32 h-40 -mb-6"
                   resizeMode="contain"
                 />
              </View>

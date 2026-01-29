@@ -28,7 +28,7 @@ export default function TryBannerSlider() {
             source={img}
             style={{
               width: width,
-              height: 300,
+              height: 265,
               resizeMode: "contain",
               borderRadius: 12,
             }}

@@ -61,7 +61,7 @@ export default function TryKitchencategories() {
           <TouchableOpacity
             onPress={() => openCategory(item.slug)}
             key={item.id}
-            className="bg-[#FEFFEC] w-[48%] rounded-2xl p-4 shadow-lg shadow-black items-center"
+            className="bg-[#FEFFEC] w-[48%] rounded-2xl shadow-lg shadow-black items-center"
           >
             <Image
               source={{ uri: item.image_url }}

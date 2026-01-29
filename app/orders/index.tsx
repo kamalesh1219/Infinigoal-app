@@ -11,10 +11,12 @@ import { router } from "expo-router";
 import { ArrowLeft, CheckCircle, ChevronRight } from "lucide-react-native";
 import { supabase } from "@/src/lib/supabase";
 import { getCurrentUser } from "@/src/services/auth";
+import { useCart } from "@/providers/CartProvider";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart, clearCart } = useCart();
 
   useEffect(() => {
     fetchOrders();
@@ -47,7 +49,47 @@ export default function OrdersPage() {
 
     setLoading(false);
   };
+  
+  const handleOrderAgain = async (orderId: string) => {
+    try {
+      // 1️⃣ Fetch order items
+      const { data: items, error } = await supabase
+      .from("order_items")
+      .select("*")
+      .eq("order_id", orderId);
 
+      if (error || !items) {
+        alert("Failed to load order items");
+        return;
+      }
+
+      // 2️⃣ Clear existing cart
+      clearCart();
+
+      // 3️⃣ Add each item back with qty
+      items.forEach((item) => {
+        for (let i = 0; i < item.qty; i++) {
+          addToCart({
+            id: item.product_id,   // ✅ must be UUID
+            name: item.name,
+            price: item.price,
+            mrp: item.mrp,
+            image_url: item.image_url,
+          });
+        }
+      });
+
+      // 4️⃣ Go to cart
+      router.push("/cart");
+
+    } catch (err) {
+      console.log("Order again error:", err);
+      alert("Something went wrong");
+    }
+  };
+
+
+  
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
 
@@ -128,9 +170,12 @@ export default function OrdersPage() {
 
               {/* ACTIONS */}
               <View className="flex-row border-t border-gray-200 mt-4">
-                <TouchableOpacity className="flex-1 py-4 items-center">
+                <TouchableOpacity 
+                  className="flex-1 py-4 items-center"
+                  onPress={() => router.push("/newhome")}
+                >
                   <Text className="font-semibold text-gray-800">
-                    Rate Order
+                   Shop Again
                   </Text>
                 </TouchableOpacity>
 
@@ -138,7 +183,7 @@ export default function OrdersPage() {
 
                 <TouchableOpacity
                   className="flex-1 py-4 items-center"
-                  onPress={() => router.push("/cart")}
+                  onPress={() => handleOrderAgain(order.id)}
                 >
                   <Text className="font-semibold text-pink-600">
                     Order Again

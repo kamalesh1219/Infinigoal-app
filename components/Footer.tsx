@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, TextInput} from "react-native";
  
 export default function Footer() {
     return(
-      <View className="bg-black mt-20 px-8">
-        <View className="mb-8 mt-14"> 
+      <View className="bg-black mt-8 px-8">
+        <View className="mb-8 mt-10"> 
            <Text className="text-white font-medium text-lg ">Grocery Items</Text> 
            <Text className="text-white mt-4">This is the Grocery items super store </Text>      
         </View>

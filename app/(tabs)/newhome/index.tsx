@@ -79,8 +79,8 @@ export default function HomeScreen() {
       <TryBannerSlider />
      
      <PhoneOffercategories/>      
-     <Offercategories/>
-     <Iphonecategories/>   
+     
+       
 
      {/* Categories */}
      <TryKitchencategories />

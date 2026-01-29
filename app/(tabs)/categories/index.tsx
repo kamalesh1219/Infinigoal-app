@@ -9,6 +9,7 @@ import TryKitchencategories from "@/components/ui/TryKitchencategories";
 import HomeCategories from "@/components/HomeCategories";
 import TrySnacksCategories from "@/components/ui/TrySnacksCategories";
 import { ArrowLeft } from "lucide-react-native";
+import Iphonecategories from "@/components/ui/Iphonecategories";
 
 
 export default function Categories() {
@@ -20,8 +21,11 @@ export default function Categories() {
         stickyHeaderIndices={[0]} 
       >
        
-       {/* HEADER */}
-      <View className="flex-row items-center px-4 py-4 bg-white border-b border-gray-200 ">
+    {/* 🔒 STICKY HEADER BLOCK */}
+    <View className="bg-white z-50 mb-2">
+ 
+     {/* HEADER */}
+     <View className="flex-row items-center px-4 py-4 bg-white border-b border-gray-200 ">
         <TouchableOpacity onPress={() => router.back()}>
           <ArrowLeft size={24} />
         </TouchableOpacity>
@@ -31,8 +35,14 @@ export default function Categories() {
         <View className="w-6" />
       </View>
 
-      <Searchbar/>
-      <Offercategories/>      
+       {/* SEARCH BAR */}
+       <Searchbar />
+      </View>
+
+    
+      <Offercategories/>  
+      <Iphonecategories/> 
+
       {/* Categories */}
       <TryKitchencategories />
 
