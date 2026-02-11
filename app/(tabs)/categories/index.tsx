@@ -10,9 +10,13 @@ import HomeCategories from "@/components/HomeCategories";
 import TrySnacksCategories from "@/components/ui/TrySnacksCategories";
 import { ArrowLeft } from "lucide-react-native";
 import Iphonecategories from "@/components/ui/Iphonecategories";
+import { useState } from "react";
+import Searchscreen from "@/features/Searchscreen";
 
 
 export default function Categories() {
+   const [search, setSearch] = useState("");
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView
@@ -36,7 +40,8 @@ export default function Categories() {
       </View>
 
        {/* SEARCH BAR */}
-       <Searchbar />
+       <TrySearchbar value={search} onChange={setSearch} />
+       <Searchscreen search={search} />
       </View>
 
     

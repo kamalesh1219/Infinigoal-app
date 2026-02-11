@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function Header() {
   return (
-    <View className="bg-[#D8DFFE] ">
+    <View className="bg-[#fef9e2]">
 
       {/* Top Row */}
       <View className="flex-row justify-between items-center px-4 py-2">

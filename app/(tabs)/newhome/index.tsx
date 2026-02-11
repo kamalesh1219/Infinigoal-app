@@ -1,26 +1,24 @@
-import { View, Text,ScrollView,TouchableOpacity, Image,Dimensions, ActivityIndicator } from "react-native";
-import { Link } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "@/components/Header";
+import { Dimensions, ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
+import Footer from "@/components/Footer";
 import HomeCategories from "@/components/HomeCategories";
+import OffersZone from "@/components/OffersZone";
+import PhoneOffercategories from "@/components/ui/PhoneOffercategories";
+import TryBannerSlider from "@/components/ui/TryBannerSlider";
+import TryBestseller from "@/components/ui/TryBestseller";
+import TryKitchencategories from "@/components/ui/TryKitchencategories";
+import TryRecentlyAdded from "@/components/ui/TryRecentlyAdded";
+import TryRegularneeds from "@/components/ui/TryRegularneeds";
+import TrySearchbar from "@/components/ui/TrySearchbar";
+import TrySignature from "@/components/ui/TrySignature";
+import TrySliderProduct from "@/components/ui/TrySliderProduct";
+import TrySnacksCategories from "@/components/ui/TrySnacksCategories";
 import { supabase } from "@/src/lib/supabase";
 import { useEffect, useState } from "react";
-import TryRegularneeds from "@/components/ui/TryRegularneeds";
-import TryBannerSlider from "@/components/ui/TryBannerSlider";
-import TryKitchencategories from "@/components/ui/TryKitchencategories";
-import TrySnacksCategories from "@/components/ui/TrySnacksCategories";
-import TrySignature from "@/components/ui/TrySignature";
-import TryRecentlyAdded from "@/components/ui/TryRecentlyAdded";
-import TrySliderProduct from "@/components/ui/TrySliderProduct";
-import TryBestseller from "@/components/ui/TryBestseller";
-import OffersZone from "@/components/OffersZone";
-import Footer from "@/components/Footer";
-import Searchbar from "@/components/ui/TrySearchbar";
-import TrySearchbar from "@/components/ui/TrySearchbar";
-import Iphonecategories from "@/components/ui/Iphonecategories";
-import Offercategories from "@/components/ui/Offercategories";
-import PhoneOffercategories from "@/components/ui/PhoneOffercategories";
+import Searchscreen from "@/features/Searchscreen";
+import SearchResults from "@/features/SearchResults";
 
 
 export default function HomeScreen() {
@@ -60,53 +58,53 @@ export default function HomeScreen() {
     }, []);
 
   return (
-    
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
-        stickyHeaderIndices={[0]} 
-      >
-      {/* 🔒 STICKY HEADER BLOCK */}
-        <View className="bg-white ">
-          {/* Header */} 
-          <Header/>
-          {/* Searchbar */} 
+  <>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 40 }}
+    >
+
+      {/* 🟡 YELLOW SAFE AREA SECTION */}
+      <SafeAreaView className="bg-[#F6E6B8] mb-2">
+        <View className="bg-[#F6E6B8]">
+          <Header />
           <TrySearchbar value={search} onChange={setSearch} />
+           <Searchscreen search={search} />
+          <TryBannerSlider />
+          
         </View>
-
-      {/* SLIDER */}
-      <TryBannerSlider />
-     
-     <PhoneOffercategories/>      
-     
+      </SafeAreaView>
        
+      {/* ⚪ NORMAL CONTENT (WHITE BG) */}
+      <View className="bg-white">
 
-     {/* Categories */}
-     <TryKitchencategories />
+        <PhoneOffercategories />
 
-     {/* Use same component with different title & data */}
-     <HomeCategories groupName="Home & Care" />
+        <TryKitchencategories />
 
-     <HomeCategories groupName="Personal Care" />
+        <HomeCategories groupName="Home & Care" />
+        <HomeCategories groupName="Personal Care" />
 
-     {/* SnacksCategories */}
-     <TrySnacksCategories />
+        <TrySnacksCategories />
 
-    <TryRegularneeds/>
+        <TryRegularneeds />
 
-    <TrySignature />
-    
-    <TrySliderProduct/>
+        <TrySignature />
 
-    <TryRecentlyAdded />
+        <TrySliderProduct />
 
-    <TryBestseller/>
+        <TryRecentlyAdded />
 
-    <OffersZone/>
-    
-    <Footer />
-  </ScrollView> 
-    </SafeAreaView>
-  );
+        <TryBestseller />
+
+        <OffersZone />
+
+        <Footer />
+
+      </View>
+
+    </ScrollView>
+  </>
+);
+
 }

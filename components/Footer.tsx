@@ -41,11 +41,11 @@ export default function Footer() {
         <View className="mb-8">
             <Text className="text-white font-medium text-lg ">NewsLetter</Text>  
             <TextInput
-            className="bg-white w-[70%] h-[10%] mb-4 mt-5"
+            className="bg-white w-[70%] py-2 my-4 px-2 rounded-md"
             placeholder="Your email address"
             />
             <TextInput
-            className="bg-white w-[70%] h-[10%]"
+            className="bg-white w-[70%] py-2 px-2 rounded-md"
             placeholder="sign up "
             />
         </View>

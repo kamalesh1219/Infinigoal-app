@@ -35,7 +35,7 @@ export default function AccountScreen() {
   if (user) {
     return (
       <SafeAreaView className="flex-1 bg-white">
-        <Header/>
+        
        <ScrollView
         showsVerticalScrollIndicator={false}
         bounces={true}

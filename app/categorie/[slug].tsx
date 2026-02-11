@@ -11,6 +11,8 @@ import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "@/src/lib/supabase";
 import { useCart } from "@/providers/CartProvider";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 type Product = {
   id: string;
@@ -24,10 +26,12 @@ type Product = {
 
 export default function CategoryPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const { addToCart } = useCart();
+  
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { cart, addToCart } = useCart();
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
   useEffect(() => {
     if (slug) loadProducts();
@@ -51,16 +55,42 @@ export default function CategoryPage() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ScrollView >
 
-        {/* HEADER */}
-        <Text className="text-3xl font-bold text-gray-900">
-          Category: {slug?.toUpperCase()}
-        </Text>
+          {/* HEADER */}
+            <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+               <View className="flex-row items-center gap-3">
+                {/* BACK BUTTON */}
+                <TouchableOpacity onPress={() => router.back()} className="rounded-full bg-gray-100 py-2 px-2">
+                  <Ionicons name="arrow-back" size={24} color="#000" />
+                </TouchableOpacity>
 
-        <Text className="text-gray-500 mt-1">
-          Home / {slug}
-        </Text>
+                {/* TITLE */}
+                <Text
+                  className="text-xl font-semibold text-gray-900"
+                  numberOfLines={1}
+                >
+                   Category: {slug?.toUpperCase()}
+                </Text>   
+               
+              </View> 
+
+                  {/* CART ICON */}
+                    <TouchableOpacity
+                      onPress={() => router.push("/cart")}
+                      className="relative mr-2 "
+                    >
+                      <Ionicons name="cart-outline" size={26} color="#16A34A" />
+
+                      {cartCount > 0 && (
+                        <View className="absolute -top-2 -right-2 bg-pink-500 w-5 h-5 rounded-full items-center justify-center">
+                          <Text className="text-white text-xs font-bold">
+                            {cartCount}
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+            </View>   
 
         {/* LOADING */}
         {loading && (
@@ -77,7 +107,7 @@ export default function CategoryPage() {
         )}
 
         {/* PRODUCTS */}
-        <View className="flex-row flex-wrap justify-between mt-4">
+        <View className="flex-row flex-wrap justify-between mt-4 mx-2">
           {products.map((item) => (
             <View
               key={item.id}

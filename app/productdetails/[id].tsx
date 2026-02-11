@@ -1,21 +1,19 @@
+import { useCart } from "@/providers/CartProvider";
+import { supabase } from "@/src/lib/supabase";
+import { Ionicons } from "@expo/vector-icons";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Heart, Maximize2, Minus, Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  Pressable,
-  TouchableOpacity,
   ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, Stack } from "expo-router";
-import { supabase } from "@/src/lib/supabase";
-import { Heart, Minus, Plus, Maximize2, ShoppingCart } from "lucide-react-native";
-import Header from "@/components/Header";
-import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCart } from "@/providers/CartProvider";
 
 
 export default function ProductDetailsScreen() {
@@ -27,40 +25,59 @@ export default function ProductDetailsScreen() {
   const [activeTab, setActiveTab] = useState("description");
   const [related, setRelated] = useState<any[]>([]);
   const { cart, addToCart, decrementQty, removeFromCart } = useCart();
+  const [variants, setVariants] = useState<any[]>([]);
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
-  
+
+
   // ======================================================
   // LOAD PRODUCT BY ID FROM SUPABASE
   // ======================================================
   async function loadProduct() {
     setLoading(true);
 
-    const { data, error } = await supabase
+    // 1️⃣ Load product
+    const { data: productData, error } = await supabase
       .from("products")
       .select("*")
       .eq("id", id)
       .single();
 
     if (error) {
-      console.log("Product Load Error:", error);
+      console.log(error);
       setLoading(false);
       return;
     }
 
-    const p = data;
-    setProduct(p);
+    setProduct(productData);
 
-    // Load related products (same tag)
+    // 2️⃣ Load variants for this product
+    const { data: variantData } = await supabase
+      .from("product_variants")
+      .select("*")
+      .eq("product_id", productData.id)
+      .order("price", { ascending: true });
 
-      const { data: relatedData } = await supabase
-        .from("products")
-        .select("*")
-        .eq("tag", p.tag)
-        .neq("id", p.id)
-        .limit(10);
+    setVariants(variantData || []);
 
-      setRelated(relatedData || []);
+    // 3️⃣ Auto select default variant
+    const defaultVariant =
+      variantData?.find((v) => v.is_default) || variantData?.[0];
 
+    setSelectedVariant(defaultVariant);
+
+
+    // RELATED PRODUCTS (SAME TAG)
+    const { data: relatedData } = await supabase
+      .from("products")
+      .select("id,name,image_url,price,mrp,price_text")
+      .eq("tag", productData.tag)
+      .neq("id", productData.id)
+      .limit(10);
+
+    setRelated(relatedData ?? []);
+    
     setLoading(false);
   }
 
@@ -108,12 +125,41 @@ export default function ProductDetailsScreen() {
 
       <SafeAreaView className="flex-1 bg-white">
         <ScrollView className="flex bg-white">
-
           {/* HEADER */}
-          <Header />
+            <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+
+                {/* BACK BUTTON */}
+                <TouchableOpacity onPress={() => router.back()} className="rounded-full bg-slate-200 py-2 px-2">
+                  <Ionicons name="arrow-back" size={24} color="#000" />
+                </TouchableOpacity>
+
+                {/* TITLE */}
+                <Text
+                  className="text-xl font-semibold text-gray-900"
+                  numberOfLines={1}
+                >
+                  {product.name}
+                </Text>   
+
+                  {/* CART ICON */}
+                    <TouchableOpacity
+                      onPress={() => router.push("/cart")}
+                      className="relative mr-2"
+                    >
+                      <Ionicons name="cart-outline" size={26} color="#16A34A" />
+
+                      {cartCount > 0 && (
+                        <View className="absolute -top-2 -right-2 bg-pink-500 w-5 h-5 rounded-full items-center justify-center">
+                          <Text className="text-white text-xs font-bold">
+                            {cartCount}
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+            </View>                
 
           {/* PRODUCT IMAGE BLOCK */}
-          <View className="relative bg-white">
+          <View className="relative bg-white my-3">
             <Image
               source={{ uri: product.image_url }}
               className="w-full h-96 bg-white"
@@ -137,20 +183,57 @@ export default function ProductDetailsScreen() {
               {product.title  || product.name}
             </Text>
 
-            <View className="flex-row items-center gap-2 mt-2">             
-              <Text className="text-white text-xl font-semibold bg-green-600 rounded-md px-2 py-2 ">
-                ₹{product.price}
-              </Text>             
-            </View>
-
-             <Text className="text-gray-500 line-through text-lg mt-2">
-                MRP  ₹{product.mrp}
-              </Text>
-
             {/* Short Description */}
             <Text className="text-gray-700 mt-5 mb-2">
               {product.description || "Product description coming soon."}
             </Text>
+
+            <View className="flex-row items-center gap-2 mt-2">             
+              <Text className="text-white text-xl font-semibold bg-green-600 rounded-md px-2 py-2 ">
+                ₹{selectedVariant?.price ?? product.price}
+              </Text>             
+            </View>
+
+             <Text className="text-gray-500 line-through text-lg mt-2">
+               MRP ₹{selectedVariant?.mrp ?? product.mrp}
+              </Text>
+
+            {/* VARIANTS */}
+              {variants.length > 0 && (
+                <View className="mt-6 mb-2">
+                  <Text className="text-base font-semibold text-gray-800 mb-3">
+                    Select Pack Size
+                  </Text>
+
+                  <View className="flex-row flex-wrap gap-3">
+                    {variants.map((variant) => {
+                      const isActive = selectedVariant?.id === variant.id;
+
+                      return (
+                        <TouchableOpacity
+                          key={variant.id}
+                          onPress={() => setSelectedVariant(variant)}
+                          className={`px-6 py-4 rounded-full border
+                            ${isActive
+                              ? "bg-green-600 border-green-600"
+                              : "bg-white border-gray-300"}
+                          `}
+                        >
+                          <Text
+                            className={`font-semibold
+                              ${isActive ? "text-white" : "text-gray-700"}
+                            `}
+                          >
+                            {variant.label}
+                          </Text>
+                            
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+              )}
+
           </View>
 
           {/* ============================
@@ -161,11 +244,11 @@ export default function ProductDetailsScreen() {
               <TouchableOpacity
                 onPress={() =>
                   addToCart({
-                    id: product.id,
-                    name: product.name ?? product.title,
-                    price: product.price,
-                    mrp: product.mrp,
-                    image_url: product.image_url,
+                      id: product.id,
+                      name: product.name ?? product.title,
+                      price: product.price,
+                      mrp: product.mrp, 
+                      image_url: product.image_url,
                   })
                 }
                 className="flex bg-lime-400 py-3 rounded-full items-center justify-center w-56"
@@ -332,7 +415,7 @@ export default function ProductDetailsScreen() {
             className="px-4 mb-10 mr-8 mt-5"
           >
             {related.length === 0 ? (
-              <Text className="text-gray-500 text-center">No related products found.</Text>
+              <Text className="text-gray-500 text-center">No related products found...</Text>
             ) : (
               related.map((item, index) => (
                 <TouchableOpacity
@@ -353,7 +436,7 @@ export default function ProductDetailsScreen() {
                   />
 
                   {/* Title */}
-                  <Text className="text-sm font-semibold mb-1 h-12 my-4" numberOfLines={2}>
+                  <Text className="text-md font-semibold mb-1 my-2" numberOfLines={2}>
                     {item.name}
                   </Text>
 
@@ -420,8 +503,6 @@ export default function ProductDetailsScreen() {
               ))
             )}
           </ScrollView>
-
-
 
         </ScrollView>
       </SafeAreaView>
