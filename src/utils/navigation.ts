@@ -1,7 +1,8 @@
 import { router } from "expo-router";
-import { allProducts } from "@/src/data/allProducts";
+
 
 export const openProduct = (id: string) => {
+  console.log("Opening openproduct with id:", id);
   router.push({   
     pathname: "/productdetails/[id]", // 👈 must match folder name
     params: { id },

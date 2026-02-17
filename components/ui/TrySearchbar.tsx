@@ -16,7 +16,7 @@ export default function TrySearchbar({ value, onChange }: Props) {
 
   return (
     <View className="px-4 my-3 flex-row items-center">
-       <View className="flex-row items-center bg-white rounded-full px-4 py-2 flex-1"> 
+       <View className="flex-row items-center bg-gray-50 rounded-full px-3 py-1 flex-1"> 
         <Ionicons name="search" size={20} color="#6B7280" /> 
         <TextInput
          placeholder="What’s on your list?" 
@@ -28,10 +28,10 @@ export default function TrySearchbar({ value, onChange }: Props) {
         <TouchableOpacity
          onPress={() => router.push("/cart")}
          className="ml-3 bg-gray-100 p-4 rounded-full" >
-           <ShoppingCart size={24} color="#16A34A"  /> 
+           <ShoppingCart size={20} color="#16A34A"  /> 
            {cartCount > 0 && (
-             <View className="absolute -top-1 -right-1 bg-pink-600 w-6 h-6 rounded-full items-center justify-center">
-               <Text className="text-white text-xs font-bold"> 
+             <View className="absolute -top-0 -right-1 bg-pink-600 w-5 h-5 rounded-full items-center justify-center">
+               <Text className="text-white text-xs font-bold "> 
                 {cartCount} </Text>
                  </View> )}
         </TouchableOpacity> 

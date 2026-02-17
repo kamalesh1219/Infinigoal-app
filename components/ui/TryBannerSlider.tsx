@@ -21,7 +21,7 @@ export default function TryBannerSlider() {
       .select("*")
       .eq("is_active", true)
       .order("sort_order", { ascending: true });
-     console.log("Banner data:", data);
+     
   
     if (error) {
       console.log("Banner error:", error);

@@ -188,19 +188,22 @@ export default function ProductDetailsScreen() {
               {product.description || "Product description coming soon."}
             </Text>
 
-            <View className="flex-row items-center gap-2 mt-2">             
+            {/* Price */}
+            <View className="flex-row items-center gap-2 mb-1 mt-2">
+            <View className="">             
               <Text className="text-white text-xl font-semibold bg-green-600 rounded-md px-2 py-2 ">
                 ₹{selectedVariant?.price ?? product.price}
               </Text>             
             </View>
 
-             <Text className="text-gray-500 line-through text-lg mt-2">
+             <Text className="text-gray-500 line-through text-lg mt-2 ">
                MRP ₹{selectedVariant?.mrp ?? product.mrp}
               </Text>
+            </View>
 
             {/* VARIANTS */}
               {variants.length > 0 && (
-                <View className="mt-6 mb-2">
+                <View className="mt-4 mb-2">
                   <Text className="text-base font-semibold text-gray-800 mb-3">
                     Select Pack Size
                   </Text>
@@ -421,7 +424,7 @@ export default function ProductDetailsScreen() {
                 <TouchableOpacity
                   key={index}
                   onPress={() => router.push(`/productdetails/${item.id}`)}
-                  className="w-60 mr-4 bg-white rounded-lg border p-3 shadow-sm"
+                  className="w-52 mr-3 bg-white rounded-lg border border-gray-200 p-3 shadow-sm"
                 >
                   {/* Discount Badge */}
                   <View className="absolute top-2 left-2 bg-red-500 px-2 py-[1px] rounded-sm">
@@ -442,14 +445,14 @@ export default function ProductDetailsScreen() {
 
                   {/* Price */}
                   <View className="flex-row items-center gap-2 mb-2">
-                    {item.price && (
-                      <Text className="text-gray-400 line-through text-sm">
+                    
+                      <Text className="text-red-600 font-semibold text-base">
                         ₹{item.price}
                       </Text>
-                    )}
+                    
 
-                    <Text className="text-red-600 font-bold text-sm">
-                      {item.price_text}
+                    <Text className="text-gray-500 line-through font-bold text-sm">
+                      MRP ₹{item.mrp}
                     </Text>
                   </View>
 
@@ -495,7 +498,7 @@ export default function ProductDetailsScreen() {
                         image_url: item.image_url,
                       })
                     }
-                   className="bg-yellow-300 rounded-full py-2 items-center w-36 mb-4"
+                   className="bg-yellow-300 rounded-full py-2 items-center w-36"
                   >
                     <Text className="font-semibold text-black">Add to cart</Text>
                   </TouchableOpacity>
